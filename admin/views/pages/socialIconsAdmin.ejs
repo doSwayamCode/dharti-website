@@ -1,0 +1,154 @@
+<!-- <h1><%= pageTitle %></h1>
+<a href="/admin/socialIconsAdmin/create"> + Add New Icon</a>
+<table border="1" cellpadding="10">
+  <thead>
+    <tr>
+      <th>Order</th>
+      <th>Name</th>
+      <th>Preview</th>
+      <th>URL</th>
+      <th>Visibility</th>
+      <th>Color</th>
+      <th>Actions</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% icons.forEach(icon => { %>
+      <tr>
+        <td><%= icon.order %></td>
+        <td><%= icon.name %></td>
+        <td><i class="<%= icon.iconClass %>" style="color: <%= icon.color %>"></i></td>
+        <td><%= icon.url %></td>
+        <td><%= icon.visibility %></td>
+        <td><%= icon.color %></td>
+        <td>
+          <a href="/admin/socialIconsAdmin/edit/<%= icon._id %>">✏️ Edit</a> |
+          <form method="POST" action="/admin/socialIconsAdmin/delete/<%= icon._id %>" style="display:inline;">
+            <button onclick="return confirm('Delete this icon?')">🗑️ Delete</button>
+          </form>
+        </td>
+      </tr>
+    <% }) %>
+  </tbody>
+</table> -->
+
+<div class="container mt-1">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <li class="mb-0"><%= pageTitle %></li>
+    <a href="/admin/socialIconsAdmin/create" class="btn btn-success">
+      <i class="fas fa-plus"></i> Add New Icon
+    </a>
+  </div>
+
+  <div class="table-responsive">
+    <table class="table table-striped table-hover table-bordered align-middle">
+      <thead class="table-dark">
+        <tr>
+          <th scope="col">Order</th>
+          <th scope="col">Name</th>
+          <th scope="col">Preview</th>
+          <th scope="col">URL</th>
+          <th scope="col">Visibility</th>
+          <th scope="col">Color</th>
+          <th scope="col" style="width: 150px;">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% icons.forEach(icon => { %>
+          <tr>
+            <td><%= icon.order %></td>
+            <td><%= icon.name %></td>
+            <td><i class="<%= icon.iconClass %> fs-4" style="color:<%= icon.color %>"></i></td>
+            <td>
+              <a href="<%= icon.url %>" target="_blank" class="text-truncate" style="max-width: 150px; display: inline-block;">
+                <%= icon.url %>
+              </a>
+            </td>
+            <td>
+              <div class="form-check form-switch">
+                <input 
+                  class="form-check-input toggle-visibility" 
+                  type="checkbox" 
+                  data-icon-id="<%= icon._id %>"
+                  <%= icon.visibility ? 'checked' : '' %>
+                >
+                <label class="form-check-label">
+                  <%= icon.visibility ? 'Visible' : 'Hidden' %>
+                </label>
+              </div>
+            </td>
+            <td>
+              <span class="color-preview" style="background-color: <%= icon.color %>;"></span>
+              <%= icon.color %>
+            </td>
+            <td class="d-flex gap-2">
+              <a href="/admin/socialIconsAdmin/edit/<%= icon._id %>" class="btn btn-sm">
+                <i class="fas fa-edit"></i>
+              </a>
+              <form method="POST" action="/admin/socialIconsAdmin/delete/<%= icon._id %>" class="d-inline">
+                <button type="submit" class="btn btn-sm" onclick="return confirm('Delete this icon?')">
+                  <i class="fas fa-trash"></i>
+                </button>
+              </form>
+            </td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<style>
+  .color-preview {
+    width: 20px;
+    height: 20px;
+    display: inline-block;
+    border: 1px solid #dee2e6;
+    border-radius: 3px;
+    vertical-align: middle;
+    margin-right: 8px;
+  }
+  .form-switch .form-check-input {
+    width: 3em;
+    height: 1.5em;
+    cursor: pointer;
+  }
+  .form-switch .form-check-label {
+    margin-left: 0.5em;
+    cursor: pointer;
+  }
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  document.querySelectorAll('.toggle-visibility').forEach(toggle => {
+    toggle.addEventListener('change', async function() {
+      const iconId = this.dataset.iconId;
+      const isVisible = this.checked;
+      
+      try {
+        const response = await fetch(`/admin/socialIconsAdmin/${iconId}/toggle`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        });
+        
+        const result = await response.json();
+        if (!result.success) {
+          this.checked = !isVisible; // Revert if failed
+          alert('Failed to update visibility');
+        } else {
+          // Update the label text
+          const label = this.nextElementSibling;
+          label.textContent = isVisible ? 'Visible' : 'Hidden';
+        }
+      } catch (error) {
+        console.error('Error:', error);
+        this.checked = !isVisible; // Revert on error
+        alert('Network error');
+      }
+    });
+  });
+});
+</script>

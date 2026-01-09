@@ -1,0 +1,46 @@
+<div class="d-flex justify-content-between align-items-center mb-2">
+  <li class="mb-0">Hero Slides</li>
+  <a href="/admin/heroSlideAdmin/create" class="btn btn-success">+ Add New Slide</a>
+</div>
+
+<table class="table table-bordered">
+  <thead>
+    <tr>
+      <th>Image</th>
+      <th>Title</th>
+      <th>Subtitle</th>
+      <th>CTA</th>
+      <th>Order</th>
+      <th>Status</th>
+      <th>Actions</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% slides.forEach(slide => { %>
+      <tr>
+        <td><img src="<%= slide.image %>" width="100"/></td>
+        <td><%= slide.title %></td>
+        <td><%= slide.subtitle %></td>
+        <td><%= slide.ctaText || '-' %></td>
+        <td><%= slide.order %></td>
+        <td>
+          <form action="/admin/heroSlideAdmin/toggle/<%= slide._id %>" method="POST">
+            <button class="btn btn-sm <%= slide.isActive ? 'btn-success' : 'btn-secondary' %>">
+              <%= slide.isActive ? 'Active' : 'Inactive' %>
+            </button>
+          </form>
+        </td>
+        <td>
+          <a href="/admin/heroSlideAdmin/edit/<%= slide._id %>" class="btn btn-sm">
+            <i class="fas fa-edit"></i>
+          </a>
+          <form action="/admin/heroSlideAdmin/delete/<%= slide._id %>" method="POST" style="display:inline;">
+            <button class="btn btn-sm" onclick="return confirm('Delete this slide?')">
+              <i class="fas fa-trash"></i>
+            </button>
+          </form>
+        </td>
+      </tr>
+    <% }); %>
+  </tbody>
+</table>
